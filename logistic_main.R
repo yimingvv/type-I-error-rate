@@ -122,7 +122,7 @@ simulate_logistic_bs <- function(n, size, sd, reruns, cores = 2){
 n_bs100 <- 30
 size_bs100 <- 100
 
-## 1000 reruns
+## 1000 Runs
 simulate_logistic_bs(n = n_bs100, size = n_bs100, reruns = 1000, sd = 0.5, cores = 12)
 
 ########################################################################
@@ -136,7 +136,7 @@ simulate_logistic_bs(n = n_bs100, size = n_bs100, reruns = 1000, sd = 0.5, cores
 n_bs1 <- 30
 size_bs1 <- 1
 
-## 1000 reruns
+## 1000 Runs
 simulate_logistic_bs(n = n_bs1, size = n_bs1, reruns = 1000, sd = 0.5, cores = 12)
 
 
