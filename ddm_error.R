@@ -90,6 +90,9 @@ error_mvt100_bs_all <-
   bind_rows(aov_error, glm_error, glmm_error,
             glmm_error_Conver)
 
+# save the file
+save(error_mvt100_bs_all, file = "./error_mvt100_bs_all.rda")
+
 # Plot
 p_mvt100_bs_all <- 
   ggplot(error_mvt100_bs_all, aes(x = analysis, y = mean)) +
@@ -136,6 +139,9 @@ glmm_error_Conver <- mvt100_bs_1000 %>%
 error_mvt100_bs_v <- 
   bind_rows(aov_error, glm_error, glmm_error, glmm_error_Conver)
 error_mvt100_bs_v
+
+# save the file
+save(error_mvt1_bs_all, file = "./error_mvt1_bs_all.rda")
 
 # Plot
 p_mvt100_bs_v <- 
