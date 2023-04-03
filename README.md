@@ -8,7 +8,7 @@ This project is about comparing the type I error rate produced by different anal
 (3) GLMM (Generalised Logistic Mixed Model).
 ### Data simulation methods
 (1) Logistic model
-(2) Diffusion model.
+(2) Ratcliff diffusion model.
 
 
 
