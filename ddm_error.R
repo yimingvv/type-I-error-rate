@@ -28,17 +28,17 @@ mvt100_bs_1000 <- sim_mvt
 ## Set check labels for convergence problems ###########################
 ########################################################################
 
-## CASE 1: mean_prop_real == 1
+## CASE 1: mean_prop_real == 1 #########################################
 mvt100_bs_100$manual_ch1 <- 
   ifelse(mvt100_bs_100$mean_prop_real == 1, TRUE, FALSE)
 
-## CASE 2: Inconvergence in GLM
+## CASE 2: Inconvergence in GLM ########################################
 mvt100_bs_100$glm_ch1 <- TRUE
 mvt100_bs_100$glm_ch1[!mvt100_bs_100$manual_ch1] <- 
   map_lgl(mvt100_bs_100$glm_obj[!mvt100_bs_100$manual_ch1],
           ~ .$converged == FALSE)
 
-## CASE 3: Inconvergence in GLMM
+## CASE 3: Inconvergence in GLMM #######################################
 # LABEL 1 
 mvt100_bs_100$glmm_ch1 <- TRUE
 mvt100_bs_100$glmm_ch1[!mvt100_bs_100$manual_ch1] <- 
@@ -418,7 +418,9 @@ mvt1_bs_1000$glmm_ch2[!mvt1_bs_1000$manual_ch] <-
 mvt1_bs_1000$glm_obj <- NULL
 mvt1_bs_1000$glmm_obj <- NULL
 
+########################################################################
 ## Create type I error rate tibble #####################################
+########################################################################
 
 # ----------------- Overall ----------------- 
 aov_error <- mvt1_bs_1000 %>%
