@@ -386,7 +386,7 @@ mvt1_bs_1000$glmm_obj[mvt1_bs_1000$new_fit] <-
 # we can temporarily save the file to explore more
 tmp <- mvt1_bs_1000 %>% 
   filter(new_fit)
-save(tmp, file = "./abnormal_cases.rda",
+save(tmp, file = "./mvt1_1000_abnormal_cases.rda",
      compress = "xz")
 
 # We failed to recalculate, so we set a manual_ch2 to mark these cases
