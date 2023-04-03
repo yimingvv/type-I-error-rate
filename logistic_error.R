@@ -91,6 +91,9 @@ error_bs100_1000_all <-
   bind_rows(aov_error, glm_error,
             glmm_error, glmm_error_Conver)
 
+# save the file
+save(error_bs100_1000_all, file = "./error_bs100_1000_all.rda")
+
 # plot
 p_bs100_1000_all <- 
   ggplot(error_bs100_1000_all,
@@ -256,6 +259,9 @@ glmm_error_Conver <- bs1_1000 %>%
 error_bs1_1000_all <- 
   bind_rows(aov_error, glm_error, glmm_error,
             glm_error_Conver, glmm_error_Conver)
+
+# save the file
+save(error_bs1_1000_all, file = "./error_bs1_1000_all.rda")
 
 # plot
 p_bs1_1000_all <-
