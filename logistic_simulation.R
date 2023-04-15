@@ -201,7 +201,7 @@ logistic_bs_one_run <- function(n, size, prob, sd = 0.5) {
 ## run for SEVERAL times 'reruns'
 ## simulate data with logistic regression considering individual differences
 ## with one BETWEEN-SUBJECT factor with two levels / two groups
-## and return p-values from two analysis for this simulation
+## and return p-values from three analysis for this simulation
 
 ##     n: number of observations, AKA participants
 ##  size: number of trials per participant
