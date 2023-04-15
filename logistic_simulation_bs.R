@@ -2,6 +2,7 @@
 ##                         Logistic Simulation                        ##
 ##                     with Individual Differences                    ##
 ##                              One Factor                            ##
+##                           Between Subject                          ##
 ########################################################################
 
 library("dplyr")
@@ -210,8 +211,8 @@ logistic_bs_one_run <- function(n, size, prob, sd = 0.5) {
 ## rerun: times of rerunning
 
 rerun_logistic_bs <- function(n, size, prob, sd, reruns) {
-  result <- rerun(reruns, 
-                  logistic_bs_one_run(n, size, prob, sd))
+  result <- map(1:reruns, 
+                ~logistic_bs_one_run(n, size, prob, sd))
   return(result)
 }
 
