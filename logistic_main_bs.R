@@ -18,7 +18,7 @@ library(fitdistrplus)
 library(truncdist)
 library(parallel)
 
-source("logistic_simulation.R")
+source("logistic_simulation_bs.R")
 
 ## set wd to the directory to save files
 
