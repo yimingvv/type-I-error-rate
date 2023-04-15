@@ -2,13 +2,14 @@
 ##               Main Analysis from Diffusion Simulation              ##
 ##                  Multivariate Normal Distribution                  ##
 ##                              One Factor                            ##
+##                           Between Subject                          ## 
 ########################################################################
 
 ## ---------------------------------------------------------------------
 ## Preparation
 ## ---------------------------------------------------------------------
 
-source("mvt_simulation.R")
+source("ddm_simulation_bs.R")
 
 library(MASS)
 library(visdat)
