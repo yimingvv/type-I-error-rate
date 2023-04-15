@@ -19,7 +19,7 @@ library("lme4")
 
 ########################################################################
 
-## logistic_bs_id_one_run(n, size, prob, sd = 0.5)
+## logistic_bs_one_run(n, size, prob, sd = 0.5)
 ## one single run
 ## simulate data with logistic regression
 ## with one BETWEEN-SUBJECT factor with two levels / two groups
@@ -30,7 +30,7 @@ library("lme4")
 ## prob: probability of success on each trial
 ## sd: standard deviation of individual variances around prob, default is 0.5
 
-logistic_bs_id_one_run <- function(n, size, prob, sd = 0.5) {
+logistic_bs_one_run <- function(n, size, prob, sd = 0.5) {
   # assume no main effect: base prob is the same for all pps in both groups
   # assume individual variances around the base prob for each pp
   
@@ -197,7 +197,7 @@ logistic_bs_id_one_run <- function(n, size, prob, sd = 0.5) {
 
 ########################################################################
 
-## rerun_logistic_bs_id(n, size, prob, sd = 0.5, reruns)
+## rerun_logistic_bs(n, size, prob, sd = 0.5, reruns)
 ## run for SEVERAL times 'reruns'
 ## simulate data with logistic regression considering individual differences
 ## with one BETWEEN-SUBJECT factor with two levels / two groups
@@ -209,9 +209,9 @@ logistic_bs_id_one_run <- function(n, size, prob, sd = 0.5) {
 ##    sd: standard deviation of individual variances around prob, default is 0.5
 ## rerun: times of rerunning
 
-rerun_logistic_bs_id <- function(n, size, prob, sd, reruns) {
+rerun_logistic_bs <- function(n, size, prob, sd, reruns) {
   result <- rerun(reruns, 
-                  logistic_bs_id_one_run(n, size, prob, sd))
+                  logistic_bs_one_run(n, size, prob, sd))
   return(result)
 }
 
