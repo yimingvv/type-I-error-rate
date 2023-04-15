@@ -1,6 +1,7 @@
 ########################################################################
 ##                 Type I Error Rate: ANOVA, GLM & GLMM               ##
 ##               Data Simulated from Drift Diffusion Model            ##
+##                           Between Subject                          ##
 ########################################################################
 
 ## A Thorough Analysis of Type I Error Rate
