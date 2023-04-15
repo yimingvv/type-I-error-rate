@@ -88,7 +88,7 @@ simulate_logistic_bs <- function(n, size, sd, reruns, cores = 2){
   # apply FUN to each element of the ... argument (i.e., each value of prob)
   # MoreArgs defines other arguments to FUN 
   # rerun_logistic_bs(n, size, prob, reruns)
-  simulated_data <- mcmapply(rerun_logistic_bs_id, prob = probs,
+  simulated_data <- mcmapply(rerun_logistic_bs, prob = probs,
                              MoreArgs = list(n = n, 
                                              size = size, 
                                              sd = sd,
