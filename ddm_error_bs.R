@@ -153,7 +153,7 @@ p_mvt100_bs_v <-
   coord_cartesian(ylim = c(0, 1)) +
   scale_x_continuous(breaks = 0:8, minor_breaks = NULL) + 
   labs(x = "Location of v", y = "Type I Error Rate",
-       title = "Diffusion Simulation mvt100 (1000 samples)") +
+       title = "Diffusion Simulation mvt100_bs (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
 p_mvt100_bs_v
 
@@ -205,7 +205,7 @@ p_mvt100_bs_sv <-
                                 2.5, 3, 3.5, 4),
                      minor_breaks = NULL) +
   labs(x = "Location of sv", y = "Type I Error Rate",
-       title = "Diffusion Simulation mvt100 (1000 samples)") +
+       title = "Diffusion Simulation mvt100_bs (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
 p_mvt100_bs_sv
 
@@ -266,7 +266,7 @@ p_mvt100_bs_90prop <-
                   position = position_dodge(0.3)) +
   coord_cartesian(ylim = c(0, 1)) + 
   labs(x = "Response proportion", y = "Type I Error Rate",
-       title = "Diffusion Simulation mvt100 (1000 samples)") +
+       title = "Diffusion Simulation mvt100_bs (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
 p_mvt100_bs_90prop
 
@@ -343,7 +343,7 @@ p_mvt100_bs_diff <-
                      minor_breaks = NULL) + 
   labs(x = "Range of differences in response proportion",
        y = "Type I Error Rate",
-       title = "Diffusion Simulation mvt100 (1000 samples)") +
+       title = "Diffusion Simulation mvt100_bs (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
 p_mvt100_bs_diff
 
@@ -472,7 +472,7 @@ p_mvt1_bs_all <-
   geom_pointrange(mapping = aes(ymin = lower, ymax = upper)) +
   coord_cartesian(ylim = c(0, 1)) + 
   labs(x = "Analysis", y = "Type I Error Rate",
-       title = "Diffusion Simulation mvt1 (1000 samples)") +
+       title = "Diffusion Simulation mvt1_bs (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
 p_mvt1_bs_all
 
@@ -528,7 +528,7 @@ p_mvt1_bs_v <-
   coord_cartesian(ylim = c(0, 1)) +
   scale_x_continuous(breaks = 0:8, minor_breaks = NULL) + 
   labs(x = "Location of v", y = "Type I Error Rate",
-       title = "Diffusion Simulation mvt1 (1000 samples)") +
+       title = "Diffusion Simulation mvt1_bs (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
 p_mvt1_bs_v
 
@@ -586,7 +586,7 @@ p_mvt1_bs_sv <-
                                 2.5, 3, 3.5, 4),
                      minor_breaks = NULL) +
   labs(x = "Location of sv", y = "Type I Error Rate",
-       title = "Diffusion Simulation mvt1 (1000 samples)") +
+       title = "Diffusion Simulation mvt1_bs (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
 p_mvt1_bs_sv
 
@@ -656,7 +656,7 @@ p_mvt1_bs_90prop <-
                   position = position_dodge(0.3)) +
   coord_cartesian(ylim = c(0, 1)) + 
   labs(x = "Response proportion", y = "Type I Error Rate",
-       title = "Diffusion Simulation mvt1 (1000 samples)") +
+       title = "Diffusion Simulation mvt1_bs (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
 p_mvt1_bs_90prop
 
@@ -736,13 +736,9 @@ p_mvt1_bs_diff <-
                      minor_breaks = NULL) + 
   labs(x = "Range of differences in response proportion",
        y = "Type I Error Rate",
-       title = "Diffusion Simulation mvt1 (1000 samples)") +
+       title = "Diffusion Simulation mvt1_bs (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
 p_mvt1_bs_diff
-
-## ---------------------------------------------------------------------
-## MVT: Repeated-Measure
-## ---------------------------------------------------------------------
 
 
 
