@@ -18,8 +18,8 @@ theme_set(theme_bw(base_size = 14))
 ## Between-Subject 1 trial pp
 ## ---------------------------------------------------------------------
 
-load("./error_bs1_1000_all.rda")
-load("./error_mvt1_bs_all.rda")
+load("./logistic simulation/error_log1_bs_all.rda")
+load("./diffusion simulation/error_ddm1_bs_all.rda")
 
 error_bs1_1000_all
 error_bs1_1000_all$size <- NULL
@@ -62,7 +62,7 @@ p_1tr_bs
 ## Between-Subject 100 trials pp
 ## ---------------------------------------------------------------------
 
-load("./error_bs100_1000_all.rda")
+load("~/logistic simulation/error_log100_bs_all.rda")
 load("./error_mvt100_bs_all.rda")
 
 error_bs100_1000_all

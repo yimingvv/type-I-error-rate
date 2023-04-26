@@ -20,38 +20,36 @@ library(graphics)
 library(ggthemes)
 theme_set(theme_bw(base_size = 12))
 
-## BS1 ######
-load(file = "~/Logistic Simulation/logistic_simulation_id/log_bs_id_30pp1tr_1000runs.rda")
-bs1_1000
 
 ## -----------------------------------------------------------------------
 ## BS100
 ## -----------------------------------------------------------------------
 
 ## load data
-load(file = "./log_bs_id_30pp100tr_1000runs.rda")
-bs100_1000 <- simulated_data
+load(file = "./results/log_bs_30pp100tr_1000runs.rda")
+log100_bs <- simulated_data
 
 ########################################################################
 ## Set check labels for convergence problems ###########################
 ########################################################################
 
 ## CASE 1: mean_prop_real == 1 #########################################
-bs100_1000$manual_ch1 <- ifelse(bs100_1000$mean_prop_real == 1, TRUE, FALSE)
+log100_bs$manual_ch1 <- ifelse(log100_bs$mean_prop_real == 1, 
+                                TRUE, FALSE)
 
 ## CASE 2: Inconvergence in GLM ########################################
-bs100_1000$glm_ch1 <- map_lgl(bs100_1000$glm_obj, ~ .$converged == FALSE)
+log100_bs$glm_ch1 <- map_lgl(log100_bs$glm_obj, ~ .$converged == FALSE)
 
 ## CASE 3: Inconvergence in GLMM #######################################
 ## LABEL 1
-bs100_1000$glmm_ch1 <- map_lgl(bs100_1000$glmm_obj,
+log100_bs$glmm_ch1 <- map_lgl(log100_bs$glmm_obj,
                                ~ isTRUE(.@optinfo$conv$lme4$code == -1))
 ## LABEL 2
-bs100_1000$glmm_ch2 <- map_lgl(bs100_1000$glmm_obj, isSingular)
+log100_bs$glmm_ch2 <- map_lgl(log100_bs$glmm_obj, isSingular)
 
 ## Release the workspace
-mvt100_bs_100$glm_obj = NULL
-mvt100_bs_100$glmm_obj = NULL
+log100_bs$glm_obj = NULL
+log100_bs$glmm_obj = NULL
 
 ########################################################################
 ## Create type I error rate tibble #####################################
@@ -59,28 +57,28 @@ mvt100_bs_100$glmm_obj = NULL
 
 # ----------------- Overall ----------------- 
 
-aov_error <- bs100_1000 %>% 
+aov_error <- log100_bs %>% 
   group_by(size) %>% 
   summarise(below_05 = sum(aov_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "aov")
 
-glm_error <- bs100_1000 %>% 
+glm_error <- log100_bs %>% 
   group_by(size) %>% 
   summarise(below_05 = sum(glm_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glm")
 
-glmm_error <- bs100_1000 %>% 
+glmm_error <- log100_bs %>% 
   group_by(size) %>% 
   summarise(below_05 = sum(glmm_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glmm")
 
-glmm_error_Conver <- bs100_1000 %>% 
+glmm_error_Conver <- log100_bs %>% 
   filter(glmm_ch1 == FALSE & glmm_ch2 == FALSE) %>% 
   group_by(size) %>% 
   summarise(below_05 = sum(glmm_p < 0.05),
@@ -88,16 +86,16 @@ glmm_error_Conver <- bs100_1000 %>%
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glmm_Conver")
 
-error_bs100_1000_all <- 
+error_log100_bs_all <- 
   bind_rows(aov_error, glm_error,
             glmm_error, glmm_error_Conver)
 
 # save the file
-save(error_bs100_1000_all, file = "./error_bs100_1000_all.rda")
+save(error_log100_bs_all, file = "./results/error_log100_bs_all.rda")
 
 # plot
-p_bs100_1000_all <- 
-  ggplot(error_bs100_1000_all,
+p_log100_bs_all <- 
+  ggplot(error_log100_bs_all,
          aes(x = analysis, y = mean)) +
   geom_pointrange(mapping = aes(ymin = lower, ymax = upper), 
                   position = position_dodge(0.03)) +
@@ -105,18 +103,18 @@ p_bs100_1000_all <-
   labs(x = "probability", y = "Type I Error Rate",
        title = "Logistic Simulation bs100 (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed") 
-p_bs100_1000_all
+p_log100_bs_all
 
 # ----------------- Group by prob ----------------- 
 
-aov_error <- bs100_1000 %>% 
+aov_error <- log100_bs %>% 
   group_by(prob) %>% 
   summarise(below_05 = sum(aov_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "aov")
 
-glm_error <- bs100_1000 %>% 
+glm_error <- log100_bs %>% 
   group_by(prob) %>% 
   summarise(below_05 = sum(glm_p < 0.05),
             n = n()) %>% 
@@ -130,7 +128,7 @@ glmm_error <- bs100_1000 %>%
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glmm")
 
-glmm_error_Conver <- bs100_1000 %>% 
+glmm_error_Conver <- log100_bs %>% 
   filter(glmm_ch1 == FALSE & glmm_ch2 == FALSE) %>% 
   group_by(prob) %>% 
   summarise(below_05 = sum(glmm_p < 0.05),
@@ -138,13 +136,16 @@ glmm_error_Conver <- bs100_1000 %>%
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glmm_Conver")
 
-error_bs100_1000_prob <- 
+error_log100_bs_prob <- 
   bind_rows(aov_error, glm_error,
             glmm_error, glmm_error_Conver)
 
+# save the file
+save(error_log100_bs_prob, file = "./results/error_log100_bs_prob.rda")
+
 # plot
-p_bs100_1000_prob <- 
-  ggplot(error_bs100_1000_prob,
+p_log100_bs_prob <- 
+  ggplot(error_log100_bs_prob,
          aes(x = prob, y = mean, shape = analysis)) +
   geom_pointrange(mapping = aes(ymin = lower, ymax = upper), 
                   position = position_dodge(0.03)) +
@@ -152,36 +153,39 @@ p_bs100_1000_prob <-
   labs(x = "probability", y = "Type I Error Rate",
        title = "Logistic Simulation bs100 (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed") 
-p_bs100_1000_prob
+p_log100_bs_prob
 
 ## -----------------------------------------------------------------------
 ## BS1
 ## -----------------------------------------------------------------------
+
+load(file = "./results/log_bs_30pp1tr_1000runs.rda")
+log1_bs <- bs1_1000
 
 ########################################################################
 ## Set check labels for convergence problems ###########################
 ########################################################################
 
 ## CASE 1: mean_prop_real == 1 #########################################
-bs1_1000$manual_ch1 <- ifelse(bs1_1000$mean_prop_real == 1, TRUE, FALSE)
+log1_bs$manual_ch1 <- ifelse(log1_bs$mean_prop_real == 1, TRUE, FALSE)
 
 ## CASE 2: Inconvergence in GLM ########################################
-bs1_1000$glm_ch1 <- TRUE
-bs1_1000$glm_ch1[!bs1_1000$manual_ch1] <- 
-  map_lgl(bs1_1000$glm_obj[!bs1_1000$manual_ch1], ~ !.$converged)
+log1_bs$glm_ch1 <- TRUE
+log1_bs$glm_ch1[!log1_bs$manual_ch1] <- 
+  map_lgl(log1_bs$glm_obj[!log1_bs$manual_ch1], ~ !.$converged)
 
 ## CASE 3: Inconvergence in GLMM #######################################
 ## Recalculate glmm_obj
 # new_fit = TRUE needs to recalculate glmm
-bs1_1000 <- bs1_1000 %>% 
+log1_bs <- log1_bs %>% 
   mutate(new_fit = if_else(
     # mean_prop_real != 1 but glmm_obj = 1
     map_lgl(glmm_obj, is.numeric) & (mean_prop_real != 1), 
     TRUE, FALSE)
   )
 
-bs1_1000$glmm_obj[bs1_1000$new_fit] <- 
-  map(.x = bs1_1000$df[bs1_1000$new_fit], 
+log1_bs$glmm_obj[log1_bs$new_fit] <- 
+  map(.x = log1_bs$df[log1_bs$new_fit], 
       .f = ~ glmer(
         resp_prop ~ group + (1|id),
         data = .,
@@ -192,27 +196,23 @@ bs1_1000$glmm_obj[bs1_1000$new_fit] <-
 
 # sometimes this calculation may fail again
 # we can temporarily save the file to explore more
-tmp <- bs1_1000 %>% 
-  filter(new_fit)
-save(tmp, file = "./bs1_1000_abnormal_cases.rda",
-     compress = "xz")
-# We succeeded in this case
+# we succeeded in this case
 
 ## LABEL 1
-bs1_1000$glmm_ch1 <- TRUE
-bs1_1000$glmm_ch1[!bs1_1000$manual_ch1] <- 
-  map_lgl(bs1_1000$glmm_obj[!bs1_1000$manual_ch1], 
+log1_bs$glmm_ch1 <- TRUE
+log1_bs$glmm_ch1[!log1_bs$manual_ch1] <- 
+  map_lgl(log1_bs$glmm_obj[!log1_bs$manual_ch1], 
           ~ isTRUE(.@optinfo$conv$lme4$code == -1))
 
 ## LABEL 2
-bs1_1000$glmm_ch2 <- TRUE
-bs1_1000$glmm_ch2[!bs1_1000$manual_ch1] <- 
-  map_lgl(bs1_1000$glmm_obj[!bs1_1000$manual_ch1], 
+log1_bs$glmm_ch2 <- TRUE
+log1_bs$glmm_ch2[!log1_bs$manual_ch1] <- 
+  map_lgl(log1_bs$glmm_obj[!log1_bs$manual_ch1], 
           isSingular)
 
 ## Release the workspace
-bs1_1000$glm_obj <- NULL
-bs1_1000$glmm_obj <- NULL
+log1_bs$glm_obj <- NULL
+log1_bs$glmm_obj <- NULL
 
 ########################################################################
 ## Create type I error rate tibble #####################################
@@ -220,28 +220,28 @@ bs1_1000$glmm_obj <- NULL
 
 # ----------------- Overall ----------------- 
 
-aov_error <- bs1_1000 %>% 
+aov_error <- log1_bs %>% 
   group_by(size) %>% 
   summarise(below_05 = sum(aov_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "aov")
 
-glm_error <- bs1_1000 %>% 
+glm_error <- log1_bs %>% 
   group_by(size) %>% 
   summarise(below_05 = sum(glm_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glm")
 
-glmm_error <- bs1_1000 %>% 
+glmm_error <- log1_bs %>% 
   group_by(size) %>% 
   summarise(below_05 = sum(glmm_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glmm")
 
-glm_error_Conver <- bs1_1000 %>% 
+glm_error_Conver <- log1_bs %>% 
   filter(manual_ch1 != TRUE & glm_ch1 != TRUE) %>% 
   group_by(size) %>% 
   summarise(below_05 = sum(glm_p < 0.05),
@@ -249,7 +249,7 @@ glm_error_Conver <- bs1_1000 %>%
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glm_Conver")
 
-glmm_error_Conver <- bs1_1000 %>% 
+glmm_error_Conver <- log1_bs %>% 
   filter(manual_ch1 != TRUE & glmm_ch1 != TRUE & glmm_ch2 != TRUE) %>% 
   group_by(size) %>% 
   summarise(below_05 = sum(glmm_p < 0.05),
@@ -257,16 +257,16 @@ glmm_error_Conver <- bs1_1000 %>%
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glmm_Conver")
 
-error_bs1_1000_all <- 
+error_log1_bs_all <- 
   bind_rows(aov_error, glm_error, glmm_error,
             glm_error_Conver, glmm_error_Conver)
 
 # save the file
-save(error_bs1_1000_all, file = "./error_bs1_1000_all.rda")
+save(error_log1_bs_all, file = "./results/error_log1_bs_all.rda")
 
 # plot
-p_bs1_1000_all <-
-  ggplot(error_bs1_1000_all,
+p_log1_bs_all <-
+  ggplot(error_log1_bs_all,
          aes(x = analysis, y = mean)) +
   geom_pointrange(mapping = aes(ymin = lower, ymax = upper), 
                   position = position_dodge(0.03)) +
@@ -274,32 +274,32 @@ p_bs1_1000_all <-
   labs(x = "probability", y = "Type I Error Rate",
        title = "Logistic Simulation bs1 (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
-p_bs1_1000_all
+p_log1_bs_all
 
 # ----------------- Group by prob ----------------- 
 
-aov_error <- bs1_1000 %>% 
+aov_error <- log1_bs %>% 
   group_by(prob) %>% 
   summarise(below_05 = sum(aov_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "aov")
 
-glm_error <- bs1_1000 %>% 
+glm_error <- log1_bs %>% 
   group_by(prob) %>% 
   summarise(below_05 = sum(glm_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glm")
 
-glmm_error <- bs1_1000 %>% 
+glmm_error <- log1_bs %>% 
   group_by(prob) %>% 
   summarise(below_05 = sum(glmm_p < 0.05),
             n = n()) %>% 
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glmm")
 
-glm_error_Conver <- bs1_1000 %>% 
+glm_error_Conver <- log1_bs %>% 
   filter(manual_ch1 != TRUE & glm_ch1 != TRUE) %>% 
   group_by(prob) %>% 
   summarise(below_05 = sum(glm_p < 0.05),
@@ -307,7 +307,7 @@ glm_error_Conver <- bs1_1000 %>%
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glm_Conver")
 
-glmm_error_Conver <- bs1_1000 %>% 
+glmm_error_Conver <- log1_bs %>% 
   filter(manual_ch1 != TRUE & glmm_ch1 != TRUE & glmm_ch2 != TRUE) %>% 
   group_by(prob) %>% 
   summarise(below_05 = sum(glmm_p < 0.05),
@@ -315,13 +315,16 @@ glmm_error_Conver <- bs1_1000 %>%
   mutate(binom.logit(x = below_05, n = n)) %>% 
   mutate(analysis = "glmm_Conver")
 
-error_bs1_1000_prob <- 
+error_log1_bs_prob <- 
   bind_rows(aov_error, glm_error, glmm_error,
             glm_error_Conver, glmm_error_Conver)
 
+# save the file
+save(error_log1_bs_prob, file = "./results/error_log1_bs_prob.rda")
+
 # prob
-p_bs1_1000_prob <-
-  ggplot(error_bs1_1000_prob,
+p_log1_bs_prob <-
+  ggplot(error_log1_bs_prob,
          aes(x = prob, y = mean,
              shape = analysis)) +
   geom_pointrange(mapping = aes(ymin = lower, ymax = upper), 
@@ -330,7 +333,7 @@ p_bs1_1000_prob <-
   labs(x = "probability", y = "Type I Error Rate",
        title = "Logistic Simulation bs1 (1000 samples)") +
   geom_hline(yintercept = 0.05, linetype = "dashed")
-p_bs1_1000_prob
+p_log1_bs_prob
 
 
 

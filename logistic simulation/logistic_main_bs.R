@@ -21,6 +21,7 @@ library(parallel)
 source("logistic_simulation_bs.R")
 
 ## set wd to the directory to save files
+wd <- "./results/logistic simulation"
 
 ## -----------------------------------------------------------------------
 ## NAMING
@@ -39,7 +40,7 @@ source("logistic_simulation_bs.R")
 name_dataframe <- function(wd, distribution, model, design, n, size, reruns){
   properties <- c(wd, "/",
                   model, "_", 
-                  design, "_id_", 
+                  design, "_", 
                   n, "pp", 
                   size, "tr", "_",
                   reruns, "runs.rda")
@@ -124,7 +125,8 @@ n_bs100 <- 30
 size_bs100 <- 100
 
 ## 1000 Runs
-simulate_logistic_bs(n = n_bs100, size = n_bs100, reruns = 1000, sd = 0.5, cores = 12)
+simulate_logistic_bs(n = n_bs100, size = n_bs100, reruns = 1000, sd = 0.5, 
+                     cores = 12)
 
 ########################################################################
 
@@ -138,7 +140,8 @@ n_bs1 <- 30
 size_bs1 <- 1
 
 ## 1000 Runs
-simulate_logistic_bs(n = n_bs1, size = n_bs1, reruns = 1000, sd = 0.5, cores = 12)
+simulate_logistic_bs(n = n_bs1, size = n_bs1, reruns = 1000, sd = 0.5, 
+                     cores = 12)
 
 
 
