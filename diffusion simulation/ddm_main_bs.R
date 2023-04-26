@@ -9,7 +9,7 @@
 ## Preparation
 ## ---------------------------------------------------------------------
 
-source("ddm_simulation_bs.R")
+source("./ddm_simulation_bs.R")
 
 library(MASS)
 library(visdat)
@@ -30,6 +30,7 @@ library(xtable)
 library(lme4)
 
 ## set wd to the directory to save the files
+wd <- "./results"
 
 ## -----------------------------------------------------------------------
 ## NAMING
@@ -198,9 +199,9 @@ mvt1_bs_1000 <- simulate_data_mvt_bs(pp = pp_mvt1_bs,
                                      reruns = 1000, cores = 12)
 
 
-## -----------------------------------------------------------------------
-## DIFFUSION SIMULATION: REPEATED-MEASURE
-## -----------------------------------------------------------------------
+
+
+
 
 
 

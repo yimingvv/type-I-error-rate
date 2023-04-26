@@ -18,7 +18,6 @@
 ## The sampled parameters are then passed on to rdiffusion to generate data 
 ## The data is then analysed using ANOVA, GLM, or GLMM
 
-
 ## ---------------------------------------------------------------------
 ## Preparation
 ## ---------------------------------------------------------------------
