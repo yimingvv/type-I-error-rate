@@ -239,8 +239,8 @@ pars_all <- tibble(id = NA, fit = NA,
                    logLik = NA, convergence = NA)
 pars_all
 
+## get estimated parameter values from each fit for each participant 
 for (j in 1:n_participants) {
-  ## get estimated parameter values for each participant
   for (k in 1:20) {
     ## get estimated parameter values, logLik, convergence for each fit
     id = j
@@ -254,17 +254,15 @@ for (j in 1:n_participants) {
 }
 
 ## remove the first row
-pars_all_20 <- pars_all_20[-1, ]
-pars_all_20 <- as.data.frame(pars_all_20)
-save(pars_all_20, file = "pars_all_20.rda")
+pars_all <- pars_all[-1, ]
+pars_all <- as.data.frame(pars_all)
+save(pars_all, file = "pars_all.rda")
 
 ## ---------------------------------------------------------------------
-## Pick correct fit for each participant
+## Pick "correct" fit for each participant
 ## ---------------------------------------------------------------------
 
-load(file = "pars_all_20.rda")
-glimpse(pars_all_20)
-str(pars_all_20)
+glimpse(pars_all)
 
 mle <- tibble(id = NA, fit = NA,
               an = NA, at = NA, 
@@ -274,7 +272,7 @@ mle <- tibble(id = NA, fit = NA,
               logLik = NA, convergence = NA)
 
 for (i in 1:n_participants) {
-  tmp <- pars_all_20 %>% filter(id == i)
+  tmp <- pars_all %>% filter(id == i)
   new_mle <- tmp %>% slice(which.max(logLik))
   mle <- rbind(mle, new_mle)
 }
@@ -293,7 +291,7 @@ mle_identifiable <- tibble(id = NA, fit = NA,
 
 for (i in 1:n_participants) {
   ## tmp: 20 fits for each participant
-  fit20_tmp <- pars_all_20 %>% filter(id == i)
+  fit20_tmp <- pars_all %>% filter(id == i)
   
   ## get the mle for each participant
   mle_tmp <- mle %>% filter(id == i)
@@ -368,9 +366,6 @@ mu
 #     vnl    an     z   t0n    sv   st0
 #   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 # 1 0.975  2.01 0.542 0.280 0.639 0.279
-
-## mu:    v,   a,   z,  t0, sv, st0
-##     -0.6, 2.8, 0.5, 0.3,  1, 0.2
 
 cov <- mle_identifiable_normal %>% 
   cov(use = "pairwise.complete.obs")
