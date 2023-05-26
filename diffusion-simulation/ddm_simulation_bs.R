@@ -8,15 +8,15 @@
 ## General Description
 ## ---------------------------------------------------------------------
 
-## Parameter distributions: Multivariate Normal Distribution (truncated or not)
+## Parameter distributions: Multivariate Normal Distribution (truncated)
 ## Analysis: ANOVA & GLM & GLMM
 ## Design: Between-Subjects
 
-## This set of functions first simulate data using Drift Diffusion Model
-## The parameter values are sampled from the multivariate normal distribution
-## to take correlations between parameters into consideration
-## The sampled parameters are then passed on to rdiffusion to generate data 
-## The data is then analysed using ANOVA, GLM, or GLMM
+## This set of functions first simulate data using Drift Diffusion Model.
+## The parameters are sampled from the multivariate normal distribution
+## which takes correlations between parameters into consideration.
+## The sampled parameters are then passed on to rdiffusion to generate data.
+## The data are then analysed using ANOVA, GLM, or GLMM.
 
 ## ---------------------------------------------------------------------
 ## Preparation
@@ -38,7 +38,7 @@ library("lme4")
 
 ## INPUT
 ##    mu: the vector of the mean of each parameter
-## sigma: the covariance matrix which consists of a, st0, sv, t0, v, z
+## sigma: the covariance matrix which consists of v, a, z, t0, sv, st0
 ##  size: number of trials per participant
 ##    pp: number of participants [per group]
 
@@ -60,7 +60,7 @@ library("lme4")
 ##    glmm_object: glmm model
 
 data_analysis_bs <- function(mu, sigma, size, pp) {
-  # assume no main effect: parameters of DDM are the same for all pps in both groups
+  # assume no main effect: same parameters distributions for pps in both groups
   
   # ------------ Simulate Data for Group 1 -------------
   g1 <- simulate_dt_bs(
@@ -71,8 +71,6 @@ data_analysis_bs <- function(mu, sigma, size, pp) {
     group = 1 # add group identifier
   )
   # calculate the number of pps
-  # I don't think we need this step, pp_g1 should be pp (the input)
-  # pp_g1 <- pp should work
   pp_g1 <- pp
   
   # ------------ Simulate Data for Group 2 -------------
@@ -133,23 +131,24 @@ data_analysis_bs <- function(mu, sigma, size, pp) {
         pp_g1 = pp_g1,
         pp_g2 = pp_g2,
         
-        a_mean = mu[1],
-        a_sd = sqrt(sigma[1, 1]),
+        # v, a, z, t0, sv, st0
+        v_mean = mu[1],
+        v_sd = sqrt(sigma[1, 1]),
         
-        st0_mean = mu[2],
-        st0_sd = sqrt(sigma[2, 2]),
+        a_mean = mu[2],
+        a_sd = sqrt(sigma[2, 2]),
         
-        sv_mean = mu[3],
-        sv_sd = sqrt(sigma[3, 3]),
+        z_mean = mu[3],
+        z_sd = sqrt(sigma[3, 3]),
         
         t0_mean = mu[4],
         t0_sd = sqrt(sigma[4, 4]),
         
-        v_mean = mu[5],
-        v_sd = sqrt(sigma[5, 5]),
+        sv_mean = mu[5],
+        sv_sd = sqrt(sigma[5, 5]),
         
-        z_mean = mu[6],
-        z_sd = sqrt(sigma[6, 6]),
+        st0_mean = mu[6],
+        st0_sd = sqrt(sigma[6, 6]),
         
         # save simulated data
         df = list(gg_final),
@@ -252,23 +251,24 @@ data_analysis_bs <- function(mu, sigma, size, pp) {
       pp_g1 = pp_g1,
       pp_g2 = pp_g2,
       
-      a_mean = mu[1],
-      a_sd = sqrt(sigma[1, 1]),
+      # v, a, z, t0, sv, st0
+      v_mean = mu[1],
+      v_sd = sqrt(sigma[1, 1]),
       
-      st0_mean = mu[2],
-      st0_sd = sqrt(sigma[2, 2]),
+      a_mean = mu[2],
+      a_sd = sqrt(sigma[2, 2]),
       
-      sv_mean = mu[3],
-      sv_sd = sqrt(sigma[3, 3]),
+      z_mean = mu[3],
+      z_sd = sqrt(sigma[3, 3]),
       
       t0_mean = mu[4],
       t0_sd = sqrt(sigma[4, 4]),
       
-      v_mean = mu[5],
-      v_sd = sqrt(sigma[5, 5]),
+      sv_mean = mu[5],
+      sv_sd = sqrt(sigma[5, 5]),
       
-      z_mean = mu[6],
-      z_sd = sqrt(sigma[6, 6]),
+      st0_mean = mu[6],
+      st0_sd = sqrt(sigma[6, 6]),
       
       # save simulated data
       df = list(gg_final),
@@ -293,8 +293,8 @@ data_analysis_bs <- function(mu, sigma, size, pp) {
 ## reruns: times of rerun
 
 reruns_bs <- function(mu, sigma, size, pp, reruns) {
-  result <- rerun(reruns, 
-                  data_analysis_bs(mu, sigma, size, pp))
+  result <- map(1: reruns, 
+                ~ data_analysis_bs(mu, sigma, size, pp))
   return(result)
 }
 
