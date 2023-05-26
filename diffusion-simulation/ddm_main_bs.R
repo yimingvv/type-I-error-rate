@@ -36,20 +36,18 @@ wd <- "./results"
 ## NAMING
 ## -----------------------------------------------------------------------
 
-## name_dataframe(wd, distribution, model, design, n, size, reruns)
+## name_dataframe(wd, model, design, n, size, reruns)
 ## name the file name of the dataframe to be saved
 
 ##           wd: the directory to save the files
-## distribution: uni (univariate) or multi (multivariate)
 ##        model: data generation model, log or ddm
 ##       design: experimental design, bs (between-subject) or rm (repeated-measure)
 ##            n: number of participants per group/condition
 ##         size: trials per participant
 ##       reruns: number of simulations
 
-name_dataframe <- function(wd, distribution, model, design, n, size, reruns){
+name_dataframe <- function(wd, model, design, n, size, reruns){
   properties <- c(wd, "/",
-                  distribution, "_", 
                   model, "_", 
                   design, "_", 
                   n, "pp", 
@@ -68,28 +66,32 @@ name_dataframe <- function(wd, distribution, model, design, n, size, reruns){
 ## Parameter Values Matrix
 ## -----------------------------------------------------------------------
 
-## Create data for simulation ############################################
-## mu: a, st0, sv, t0, v, z
-mu <- c(2.8, 0.2, 1, 0.3, -0.6, 0.50)
-
-## sigma
-load("sigma.rda")
+## Load mean and covariance matrix for simulation #######################
+load("./parameters/mu.rda")
+load("./parameters/cov.rda")
+cov
+mu 
+#     vnl    an     z   t0n    sv   st0
+#   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+# 1 0.975  2.01 0.542 0.280 0.639 0.279
+mu <- c(0.975, 2.01, 0.542, 0.280, 0.639, 0.279)
 
 ## Create lists with all combinations of DDM parameters ##################
 
-## v2 ranges from 0 to 4 by 0.5 step
-## For each v2, v1 ranges within [0:8]
-combos <- expand.grid(v1 = seq(0, 8, by = 1),
-                      v2 = seq(0, 4, by = 0.5))
-## 9*9 = 81 rows
+## v ranges from 0 to 8 by step = 1
+## For each v, sv ranges from 0 to 4 by step = 0.5
+combos <- expand.grid(v_tmp = seq(0, 8, by = 1),
+                      sv_tmp = seq(0, 4, by = 0.5))
+## 9 * 9 = 81 combinations
 
 combos_all <- combos %>% 
-  mutate(a = rep(2.8, nrow(combos)),    # fixed a
-         st0 = rep(0.2, nrow(combos)),  # fixed st0
-         sv = combos$v2,                # varied sv
-         t0 = rep(0.3, nrow(combos)),   # fixed t0
-         v = combos$v1,                 # varied v
-         z = rep(0.5, nrow(combos)))    # fixed z
+  mutate(v = v_tmp,                      # varied v
+         a = rep(mu[2], nrow(combos)),   # fixed a
+         z = rep(mu[3], nrow(combos)),   # fixed z
+         t0 = rep(mu[4], nrow(combos)),  # fixed t0
+         sv = sv_tmp,                    # varied sv
+         st0 = rep(mu[5], nrow(combos))  # fixed st0
+         )
 
 ## Keep the parameters in the original order
 combos_all$v1 <- NULL 
@@ -110,7 +112,7 @@ combos_use <- t(split(t(combos_all),
 
 ## Main Function #######################################################
 
-## simulate_data_mvt_bs(pp, size, reruns, cores = 2)
+## simulate_data_bs(pp, size, reruns, cores = 2)
 
 ## INPUT
 ##  sigma: rda file with drift diffusion parameters from an original model
@@ -138,7 +140,7 @@ combos_use <- t(split(t(combos_all),
 ##        glm_obj: glm model
 ##       glmm_obj: glmm model
 
-simulate_data_mvt_bs <- function(pp, size, reruns, cores = 2){
+simulate_data_bs <- function(pp, size, reruns, cores = 2){
   
   # mcmapply(FUN, ..., MoreArgs)
   # apply FUN taking each element of ... argument (each combination of DDM parameters)
@@ -155,7 +157,6 @@ simulate_data_mvt_bs <- function(pp, size, reruns, cores = 2){
   sim_mvt <- bind_rows(sim_mvt)
   
   file_name <- name_dataframe(wd = wd,
-                              distribution = 'multi', 
                               model = 'ddm', 
                               design = 'bs', 
                               n = pp, 
@@ -168,35 +169,37 @@ simulate_data_mvt_bs <- function(pp, size, reruns, cores = 2){
 
 ########################################################################
 
-## RUN THE SIMULATION MVT100
+## simulate_data_bs(pp, size, reruns, cores = 2)
+
+## RUN THE SIMULATION BS100_1V
 #  30 participants per group
 #  100 trials per participant
 #  v (drift rate) ~ [0, 1, 2, 3, 4, 5, 6, 7, 8]
 #  sv (intertrial variability of drift rate) ~ [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
 
-pp_mvt100_bs <- 30
-size_mvt100_bs <- 100
+pp_bs100 <- 30
+size_bs100 <- 100
 
 ## 1000 Runs 
-mvt100_bs_1000 <- simulate_data_mvt_bs(pp = pp_mvt100_bs,
-                                       size = size_mvt100_bs,
-                                       reruns = 1000, cores = 12)
+ddm_bs100_1000 <- simulate_data_bs(pp = pp_bs100,
+                                   size = size_bs100,
+                                   reruns = 1000, cores = 12)
 
 ########################################################################
 
-## RUN THE SIMULATION MVT1
+## RUN THE SIMULATION BS1_1V
 #  30 participants per group
 #  1 trial per participant
 #  v (drift rate) ~ [0, 1, 2, 3, 4, 5, 6, 7, 8]
 #  sv (intertrial variability of drift rate) ~ [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
 
-pp_mvt1_bs <- 30
-size_mvt1_bs <- 1
+pp_bs1 <- 30
+size_bs1 <- 1
 
 ## 1000 Runs 
-mvt1_bs_1000 <- simulate_data_mvt_bs(pp = pp_mvt1_bs,
-                                     size = size_mvt1_bs,
-                                     reruns = 1000, cores = 12)
+ddm_bs1_1000 <- simulate_data_bs(pp = pp_bs1,
+                                 size = size_bs1,
+                                 reruns = 1000, cores = 12)
 
 
 
