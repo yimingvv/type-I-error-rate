@@ -13,9 +13,11 @@ library("rtdists")
 ## Description
 ## ---------------------------------------------------------------------
 
-## Sampling the parameter values
-## Fitting multivariate distribution needs no 'optimization algorithm'
-## and the covariance matrix which consists of the variance of each parameter along the diagonal and the covariance between every possible pair of variables in other positions of the matrix
+## Sampling the parameter values from $multivariate$ distribution.
+## It needs 'optimization algorithm', but just uses the means and
+## covariance matrix of parameters for Ratcliff diffusion model.
+
+## DDM - drift diffusion model - Ratcliff diffusion model
 
 ## ---------------------------------------------------------------------
 ## Function for parameter sampling
@@ -25,41 +27,41 @@ library("rtdists")
 
 ## INPUT
 ##    mu: the vector of the mean of each parameter
+##        c(v a z t0 sv st0)
 ## sigma: the covariance matrix which consists of
 ##        (1) the variance of each parameter along the diagonal
 ##        (2) the covariance between each pair of parameters
 
 ## OUTPUT
-## A vector of parameter values sampled from a best-fit distribution
+## A vector of parameter values sampled from parameter distributions
 
-## Input sigma matrix consist of six parameters
-##   a: threshold separation, > 0
-## st0: intertrial variability of non-decision time, > 0
-##  sv: intertrial variability of drift rate, 10 > ~ > 0
-##  t0: non-decision time, > 0
+## Input mu and cor matrix consist of six parameters
 ##   v: drift rate/quality of information accumulation, 10 > ~ > -10
-##   z: starting point, 0.5*a is unbiased decision, 1 > ~ > 0
+##   a: threshold separation, > 0
+##   z: relative starting point, 0.5*a is unbiased decision, 1 > ~ > 0
+##  t0: non-decision time, > 0
+##  sv: intertrial variability of drift rate, 10 > ~ > 0
+## st0: intertrial variability of non-decision time, > 0
+##      (Date range is from observation of the original data)
 
 par_from_val <- function(mu, sigma) {
   # generate random numbers from the truncated mv normal distribution
   # n: times of random sampling, here just return one set of parameters for DDM
   gen <- rtmvnorm(n = 1, mean = mu, sigma = sigma,
-                  # WHY sv ~ [0, 10]
-                  # WHY v ~ [-10, 10]
-                  # WHY z ~ [0, 1]
-                  # from observation of the original data
-                  lower = c(0,     0,  0,   0, -10, 0),
-                  upper = c(Inf, Inf, 10, Inf,  10, 1),
+                  #       c(  v,   a,  z,  t0, sv, st0)
+                  lower = c(-10,   0,  0,   0,  0,   0),
+                  upper = c( 10, Inf,  1, Inf, 10, Inf),
                   H = NULL)
   gen <- as.data.frame(gen)
   gen <- gen %>% 
     rename(
-      a = V1,
-      st0 = V2,
-      sv = V3,
+      v = V1,
+      a = V2,
+      z = V3,
       t0 = V4,
-      v = V5,
-      z = V6)
+      sv = V5,
+      st0 = V6)
+  gen
 }
 
 ## ---------------------------------------------------------------------
@@ -79,10 +81,9 @@ par_from_val <- function(mu, sigma) {
 
 ## OUTPUT: One single simulation
 ## Simulated data of pp participants in a group (size trials per pp)
-## using the DDM parameters sampled from a mvt nd with mu and sigma
+## using DDM parameters sampled from a mvt normal dis with mu and sigma
 
 simulate_dt_bs <- function(mu, sigma, size, pp, group) {
-  
   # params(mu, sigma): simulate n trials (n = size) for one pp
   #                    using one set of parameters sampled from 
   #                    the truncated multivariate normal distribution
@@ -93,10 +94,10 @@ simulate_dt_bs <- function(mu, sigma, size, pp, group) {
       n = size,
       v = values$v,
       a = values$a,
+      z = values$z * values$a, # relative scale
       t0 = values$t0,
       sv = values$sv,
       st0 = values$st0,
-      z = values$z,
       stop_on_error = FALSE
       # return 0 if parameters values are outside the allowed range
     )
@@ -104,7 +105,7 @@ simulate_dt_bs <- function(mu, sigma, size, pp, group) {
   
   # repeat the simulation for all pps (n = pp)
   repeat
-  {result <- rerun(pp, params(mu, sigma)) %>%
+  {result <- map(1:pp, ~ params(mu, sigma)) %>%
     rbindlist(., idcol = TRUE) %>% # add id column
     mutate(group = rep(group))  # add group number 
   
@@ -121,3 +122,4 @@ simulate_dt_bs <- function(mu, sigma, size, pp, group) {
   }
   return(result)
 }
+
