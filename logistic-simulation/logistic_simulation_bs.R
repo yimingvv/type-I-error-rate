@@ -21,10 +21,9 @@ library("lme4")
 ########################################################################
 
 ## logistic_bs_one_run(n, size, prob, sd = 0.5)
-## one single run
-## simulate data with logistic regression
+## simulate data for one single run with logistic regression
 ## with one BETWEEN-SUBJECT factor with two levels / two groups
-## and return p-values from two analysis for this simulation
+## and return p-values from three analysis for this simulation
 
 ## n: number of participants per group
 ## size: number of trials per participant
