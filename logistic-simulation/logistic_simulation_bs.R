@@ -32,7 +32,7 @@ library("lme4")
 
 logistic_bs_one_run <- function(n, size, prob, sd = 0.5) {
   # assume no main effect: base prob is the same for all pps in both groups
-  # assume individual variances around the base prob for each pp
+  # consider individual variances around the base prob for each pp
   
   # ------------ Simulate Data for Groups 1 & 2 -----------------
   prob_g1 <- plogis(rnorm(n, qlogis(prob), sd))
