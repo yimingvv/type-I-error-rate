@@ -28,13 +28,71 @@ library("car")
 library("lme4")
 
 ## ---------------------------------------------------------------------
-## Between-Subject Design: Simulation & Analysis
+## Function for Data Simulation: One Group
 ## ---------------------------------------------------------------------
 
-## One Run #############################################################
+## One Iteration for Between-Subject Design ############################
+
+## simulate_dt_bs(mu, sigma, size, pp, group)
+
+## INPUT
+##    mu: the vector of the mean of each parameter
+## sigma: the covariance matrix which consists of
+##  size: number of trials per participant
+##    pp: number of participants per group
+## group: the group label
+
+## OUTPUT: Stimulate one group of data
+## Simulated data of pp participants in a group (size trials per pp)
+## using the DDM parameters sampled from a mvt nd with mu and sigma
+
+simulate_dt_bs <- function(mu, sigma, size, pp, group) {
+  
+  # params(mu, sigma): simulate n trials (n = size) for one pp
+  #                    using one set of parameters sampled from 
+  #                    the truncated multivariate normal distribution
+  params <- function(mu, sigma) {
+    # values: one set of parameters for one DDM model (each pp)
+    values <- par_from_val(mu, sigma)
+    trials <- rdiffusion(
+      n = size,
+      v = values$v,
+      a = values$a,
+      t0 = values$t0,
+      sv = values$sv,
+      st0 = values$st0,
+      z = values$z,
+      stop_on_error = FALSE
+      # return 0 if parameters values are outside the allowed range
+    )
+  }
+  
+  # repeat the simulation for all pps (n = pp)
+  repeat
+  {result <- rerun(pp, params(mu, sigma)) %>%
+    rbindlist(., idcol = TRUE) %>% # add id column
+    mutate(group = rep(group))  # add group number 
+  
+  # remove those participants whose rdiffusion produce an error
+  result <- result %>% 
+    rename("id" = ".id") %>% 
+    mutate(id = paste0(group, "_", id)) %>%
+    group_by(id) %>%
+    filter(mean(rt) != 0) %>% # by using this filter
+    ungroup()
+  
+  # break until the valid simulation reaches the number of pps
+  if (as.numeric(as.character(summarise(result, n_distinct(id)))) == pp) break
+  }
+  return(result)
+}
+
+## ---------------------------------------------------------------------
+## Function for Data Analysis: One Factor
+## ---------------------------------------------------------------------
 
 ## data_analysis_bs(mu, sigma, size, pp)
-## Analysing 1 dataset with 'pp' participants and 'size' number of trials 
+## Analyse one set of data with 'pp' participants and 'size' number of trials 
 
 ## INPUT
 ##    mu: the vector of the mean of each parameter
